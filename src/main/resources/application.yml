@@ -17,5 +17,5 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create
-  custom:
-    genFileDirPath: /temp/app10
+custom:
+  genFileDirPath: /Users/jihunkim/temp/app10

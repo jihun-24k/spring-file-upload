@@ -1,4 +1,4 @@
-package com.ll.exam.app10.app.home.controller;
+package com.ll.exam.app10.app.fileUpload.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;

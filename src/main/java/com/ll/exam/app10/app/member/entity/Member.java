@@ -4,6 +4,7 @@ import com.ll.exam.app10.app.base.entity.BaseEntity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 
 @Entity
@@ -14,4 +15,9 @@ import javax.persistence.Entity;
 @SuperBuilder
 @ToString(callSuper = true)
 public class Member extends BaseEntity {
+    @Column(unique = true)
+    private String username;
+    private String password;
+    private String email;
+    private String profileImg;
 }

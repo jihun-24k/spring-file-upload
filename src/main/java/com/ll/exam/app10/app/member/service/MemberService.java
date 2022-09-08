@@ -14,7 +14,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class MemberService {
-    @Value("${custom.genFileDirPath")
+    @Value("${custom.genFileDirPath}")
     private String genFileDirPath;
 
     private final MemberRepository memberRepository;

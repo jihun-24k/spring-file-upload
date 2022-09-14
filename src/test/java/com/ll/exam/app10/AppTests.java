@@ -1,24 +1,32 @@
 package com.ll.exam.app10;
 
-import com.ll.exam.app10.app.fileUpload.controller.HomeController;
+import com.ll.exam.app10.app.home.controller.HomeController;
 import com.ll.exam.app10.app.member.controller.MemberController;
+import com.ll.exam.app10.app.member.entity.Member;
 import com.ll.exam.app10.app.member.service.MemberService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.io.Resource;
+import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.web.client.RestTemplate;
 
 import javax.transaction.Transactional;
+
+import java.io.InputStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -98,5 +106,47 @@ class AppTests {
                 .andExpect(handler().handlerType(MemberController.class))
                 .andExpect(handler().methodName("showProfile"))
                 .andExpect(content().string(containsString("user4@test.com")));
+    }
+
+    @Test
+    @DisplayName("회원가입")
+    void t5() throws Exception {
+        String testUploadFileUrl = "https://picsum.photos/200/300";
+        String originalFileName = "test.png";
+
+        // wget
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<Resource> response = restTemplate.getForEntity(testUploadFileUrl, Resource.class);
+        InputStream inputStream = response.getBody().getInputStream();
+
+        MockMultipartFile profileImg = new MockMultipartFile(
+                "profileImg",
+                originalFileName,
+                "image/png",
+                inputStream
+        );
+
+        // 회원가입(MVC MOCK)
+        // when
+        ResultActions resultActions = mvc.perform(
+                        multipart("/member/join")
+                                .file(profileImg)
+                                .param("username", "user5")
+                                .param("password", "1234")
+                                .param("email", "user5@test.com")
+                                .characterEncoding("UTF-8"))
+                .andDo(print());
+
+        resultActions
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/member/profile"))
+                .andExpect(handler().handlerType(MemberController.class))
+                .andExpect(handler().methodName("postJoin"));
+
+        Member member = memberService.getMemberById(5L);
+
+        assertThat(member).isNotNull();
+
+        memberService.removeProfileImg(member);
     }
 }

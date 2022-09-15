@@ -27,11 +27,13 @@ public class MemberController {
     private final PasswordEncoder passwordEncoder;
 
     @GetMapping("/join")
+    @PreAuthorize("isAnonymous()")
     public String showJoin(){
         return "member/join";
     }
 
     @PostMapping("/join")
+    @PreAuthorize("isAnonymous()")
     public String postJoin(HttpServletRequest req, String username, String password, String email, MultipartFile profileImg){
 
         String passwordClearText = password;
@@ -63,6 +65,7 @@ public class MemberController {
         return "member/profile";
     }
 
+    @PreAuthorize("isAnonymous()")
     @GetMapping("/login")
     public String showLogin() {
         return "member/login";

@@ -62,4 +62,9 @@ public class MemberController {
         model.addAttribute("loginedMember", loginedMember);
         return "member/profile";
     }
+
+    @GetMapping("/login")
+    public String showLogin() {
+        return "member/login";
+    }
 }

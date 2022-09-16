@@ -2,8 +2,10 @@ package com.ll.exam.app10.app.member.controller;
 
 import com.ll.exam.app10.app.member.entity.Member;
 import com.ll.exam.app10.app.member.service.MemberService;
+import com.ll.exam.app10.app.security.dto.MemberContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -58,10 +60,8 @@ public class MemberController {
 
     @PreAuthorize("isAuthenticated")
     @GetMapping("/profile")
-    public String showProfile(Model model, Principal principal){
-        Member loginedMember = memberService.getMemberByUsername(principal.getName());
-
-        model.addAttribute("loginedMember", loginedMember);
+    public String showProfile(@AuthenticationPrincipal MemberContext memberContext, Model model) {
+        model.addAttribute("memberContext", memberContext);
         return "member/profile";
     }
 

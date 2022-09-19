@@ -1,15 +1,33 @@
 package com.ll.exam.app10.app.security.service;
 
+import com.ll.exam.app10.app.member.entity.Member;
+import com.ll.exam.app10.app.member.exception.MemberNotFoundException;
+import com.ll.exam.app10.app.member.repository.MemberRepository;
+import com.ll.exam.app10.app.security.dto.MemberContext;
+import com.ll.exam.app10.app.security.exception.OAuthTypeMatchNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
+import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class OAuth2UserService extends DefaultOAuth2UserService {
-     /*
+
+    @Autowired
+    private MemberRepository memberRepository;
+
      @Override
      @Transactional
      public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -37,7 +55,7 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
                      member = Member.builder()
                              .email(email)
                              .username(username)
-                             .password(passwordEncoder.encode(UUID.randomUUID().toString()))
+                             .password("")
                              .build();
                      memberRepository.save(member);
                  }
@@ -46,15 +64,12 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
              member = memberRepository.findByUsername("%s_%s".formatted(oauthType, oauthId))
                      .orElseThrow(MemberNotFoundException::new);
          }
-         Set<GrantedAuthority> authorities = new LinkedHashSet<>();
+         List<GrantedAuthority> authorities = new ArrayList<>();
          authorities.add(new SimpleGrantedAuthority("USER"));
          return new MemberContext(member, authorities, attributes, userNameAttributeName);
      }
-     */
-
-     /*
      private boolean isNew(String oAuthType, String oAuthId) {
          return memberRepository.findByUsername("%s_%s".formatted(oAuthType, oAuthId)).isEmpty();
      }
-     */
+
 }

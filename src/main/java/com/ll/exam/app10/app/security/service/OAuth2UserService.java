@@ -7,6 +7,7 @@ import com.ll.exam.app10.app.member.service.MemberService;
 import com.ll.exam.app10.app.security.dto.MemberContext;
 import com.ll.exam.app10.app.security.exception.OAuthTypeMatchNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -24,6 +25,7 @@ import java.util.Map;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
+@Slf4j
 public class OAuth2UserService extends DefaultOAuth2UserService {
 
     @Autowired
@@ -47,11 +49,13 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
          if (isNew(oauthType, oauthId)) {
              switch (oauthType) {
                  case "KAKAO" -> {
+                     log.debug("attributes : " + attributes);
                      Map attributesProperties = (Map) attributes.get("properties");
                      Map attributesKakaoAcount = (Map) attributes.get("kakao_account");
                      String nickname = (String) attributesProperties.get("nickname");
                      String email = "%s@kakao.com".formatted(oauthId);
                      String username = "KAKAO_%s".formatted(oauthId);
+                     String profile_image = (String) attributesProperties.get("profile_image");
                      if ((boolean) attributesKakaoAcount.get("has_email")) {
                          email = (String) attributesKakaoAcount.get("email");
                      }
@@ -61,7 +65,7 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
                              .password("")
                              .build();
                      memberRepository.save(member);
-                     memberService.setProfileImgByUrl(member, "https://picsum.photos/200/300");
+                     memberService.setProfileImgByUrl(member, profile_image);
                  }
              }
          } else {

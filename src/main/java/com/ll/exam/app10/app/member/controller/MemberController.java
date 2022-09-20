@@ -12,16 +12,16 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.security.Principal;
 import java.util.concurrent.TimeUnit;
 
 @Controller
@@ -72,6 +72,20 @@ public class MemberController {
     @GetMapping("/login")
     public String showLogin() {
         return "member/login";
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/modify")
+    public String showModify(){
+        return "member/modify";
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/modify")
+    public String modify(@AuthenticationPrincipal MemberContext context, String email, MultipartFile profileImg){
+        Member member = memberService.getMemberById(context.getId());
+        memberService.modify(member, email, profileImg);
+        return"redirect:/member/profile";
     }
 
     @GetMapping("/profile/img/{id}")

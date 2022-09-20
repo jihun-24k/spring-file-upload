@@ -5,19 +5,11 @@ import com.ll.exam.app10.app.member.repository.MemberRepository;
 import com.ll.exam.app10.util.Util;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -31,7 +23,7 @@ public class MemberService {
         return memberRepository.findByUsername(username).orElse(null);
     }
 
-    public Member join(String username, String password, String email, MultipartFile profileImg) {
+    public String saveProfileImg(MultipartFile profileImg) {
         String profileImgDirName = getCurrentProfileImgDirName();
 
         String ext = Util.file.getExt(profileImg.getOriginalFilename());
@@ -48,18 +40,7 @@ public class MemberService {
             throw new RuntimeException(e);
         }
 
-        String profileImgRelPath = profileImgDirName + "/" + fileName;
-
-        Member member = Member.builder()
-                .username(username)
-                .password(password)
-                .email(email)
-                .profileImg(profileImgRelPath)
-                .build();
-
-        memberRepository.save(member);
-
-        return member;
+        return profileImgDirName + "/" + fileName;
     }
 
     public Member getMemberById(Long id) {
@@ -75,6 +56,19 @@ public class MemberService {
                 .username(username)
                 .password(password)
                 .email(email)
+                .build();
+        memberRepository.save(member);
+        return member;
+    }
+
+    public Member join(String username, String password, String email, MultipartFile profileImg) {
+        String profileImgRelPath = saveProfileImg(profileImg);
+
+        Member member = Member.builder()
+                .username(username)
+                .password(password)
+                .email(email)
+                .profileImg(profileImgRelPath)
                 .build();
 
         memberRepository.save(member);
@@ -96,6 +90,15 @@ public class MemberService {
     public void setProfileImgByUrl(Member member, String url) {
         String filePath = Util.file.downloadImg(url, genFileDirPath + "/" + getCurrentProfileImgDirName() + "/" + UUID.randomUUID());
         member.setProfileImg(getCurrentProfileImgDirName() + "/" + new File(filePath).getName());
+        memberRepository.save(member);
+    }
+
+    public void modify(Member member, String email, MultipartFile profileImg) {
+        removeProfileImg(member);
+        String profileImgRelPath = saveProfileImg(profileImg);
+
+        member.setEmail(email);
+        member.setProfileImg(profileImgRelPath);
         memberRepository.save(member);
     }
 }

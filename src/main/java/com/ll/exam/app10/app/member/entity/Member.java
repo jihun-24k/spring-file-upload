@@ -36,7 +36,7 @@ public class Member extends BaseEntity {
     }
 
     public String getProfileImgUrl() {
-        if ( profileImg == null ) return null;
+        if (profileImg == null) return null;
 
         return "/gen/" + profileImg;
     }

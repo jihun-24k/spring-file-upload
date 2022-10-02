@@ -7,18 +7,18 @@
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
-         @font-face {
-             font-family: 'GmarketSansMedium';
-             src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff') format('woff');
-             font-weight: normal;
-             font-style: normal;
-         }
+        @font-face {
+            font-family: 'GmarketSansMedium';
+            src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
 
-         html > body {
-             font-family: "GmarketSansMedium";
-             text-underline-position: under;
-         }
-     </style>
+        html > body {
+            font-family: "GmarketSansMedium";
+            text-underline-position: under;
+        }
+    </style>
 </head>
 
 <body>
@@ -29,6 +29,8 @@
 
 <header>
     <div class="container">
+        <a href="/">메인</a>
+        <a href="/about">어바웃</a>
         <a href="/member/login" sec:authorize="isAnonymous()">로그인</a>
         <a href="/member/join" sec:authorize="isAnonymous()">회원가입</a>
         <a href="/member/logout" sec:authorize="isAuthenticated()">로그아웃</a>
@@ -43,11 +45,11 @@
             <img class="w-10 h-10 object-cover rounded" th:src="@{${#authentication.principal.profileImgRedirectUrl}}" alt="">
 
             <div th:text="|${#authentication.principal.username}님 환영합니다.|"></div>
-
-            </div>
         </header>
     </div>
 </header>
+
+<hr>
 
 <section layout:fragment="content">
     <div>내용</div>
